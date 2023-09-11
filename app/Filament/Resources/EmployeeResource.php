@@ -6,8 +6,13 @@ use App\Filament\Resources\EmployeeResource\Pages;
 use App\Filament\Resources\EmployeeResource\RelationManagers;
 use App\Models\Employee;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -23,7 +28,24 @@ class EmployeeResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Section::make()->schema([
+                    Select::make('country_id')
+                        ->relationship('country', 'name')->native(false)->required(),
+                    Select::make('state_id')
+                        ->relationship('state', 'name')->native(false)->required(),
+                    Select::make('city_id')
+                        ->relationship('city', 'name')->native(false)->required(),
+                    Select::make('department_id')
+                        ->relationship('department', 'name')->native(false)->required(),
+                    TextInput::make('first_name')->required(),
+                    TextInput::make('last_name'),
+                    TextInput::make('address'),
+                    TextInput::make('zip_code'),
+                    DatePicker::make('dob')->label('Date of Birth')
+                        ->format('d/m/Y')->native(false),
+                    DatePicker::make('doj')->label('Date of Joining')
+                        ->format('d/m/Y')->native(false),
+                ])
             ]);
     }
 
@@ -31,13 +53,19 @@ class EmployeeResource extends Resource
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('id')->sortable(),
+                TextColumn::make('first_name')->sortable()->searchable(),
+                TextColumn::make('last_name')->sortable()->searchable(),
+                TextColumn::make('dob')->label('Date of Birth')->sortable()->searchable(),
+                TextColumn::make('doj')->label('Date of Joining')->sortable()->searchable(),
+                TextColumn::make('created_at')->dateTime()
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -48,14 +76,14 @@ class EmployeeResource extends Resource
                 Tables\Actions\CreateAction::make(),
             ]);
     }
-    
+
     public static function getRelations(): array
     {
         return [
             //
         ];
     }
-    
+
     public static function getPages(): array
     {
         return [
@@ -63,5 +91,5 @@ class EmployeeResource extends Resource
             'create' => Pages\CreateEmployee::route('/create'),
             'edit' => Pages\EditEmployee::route('/{record}/edit'),
         ];
-    }    
+    }
 }

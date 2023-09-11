@@ -28,8 +28,8 @@ class CountryResource extends Resource
         return $form
             ->schema([
                 Section::make()->schema([
-                    TextInput::make('name'),
-                    TextInput::make('code')
+                    TextInput::make('name')->required(),
+                    TextInput::make('code')->required()
                 ])
             ]);
     }
